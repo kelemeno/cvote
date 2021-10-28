@@ -1,4 +1,4 @@
-Now it is a simple voting program instead. 
+Now it is a simple voting program instead, in src/demo/cvote
 
 
 # Introduction
