@@ -60,6 +60,7 @@ class BatchProver:
         self.update_state(transactions)
 
         # Sanity check.
+      
         assert program_output[2] == self.balance.a
         assert program_output[3] == self.balance.b
 
@@ -111,6 +112,8 @@ class BatchProver:
             output = get_program_output(cairo_pie)
 
         return job_key, fact, output
+        
+        
 
     def update_state(self, transactions: List[VoteTransaction]):
         for tx in transactions:

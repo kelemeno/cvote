@@ -21,9 +21,9 @@ from starkware.cairo.lang.vm.crypto import get_crypto_lib_context_manager, peder
 from starkware.cairo.sharp.sharp_client import init_client
 
 N_ACCOUNTS = 5
-N_BATCHES = 3
+N_BATCHES = 1
 MIN_OPERATOR_BALANCE = 0.1 * 10 ** 18
-BATCH_SIZE = 10
+BATCH_SIZE = 3
 GAS_PRICE = 10000000000
 AMM_SOURCE_PATH = os.path.join(os.path.dirname(__file__), "cvote.cairo")
 CONTRACT_SOURCE_PATH = os.path.join(os.path.dirname(__file__), "cvote_contract.sol")
@@ -74,30 +74,24 @@ def deploy_contract(batch_prover: BatchProver, w3: Web3, operator: eth.Account) 
         .decode("utf-8")
         .split("\n")
     )
-    bytecode = artifacts[3]
+    bytecode = artifacts[9]
     abi = artifacts[5]
     new_contract = w3.eth.contract(abi=abi, bytecode=bytecode)
-    print(account_tree_root, amount_token_a,amount_token_b,program_hash,cairo_verifier)
+   ## print(account_tree_root, amount_token_a,amount_token_b,program_hash,cairo_verifier, abi, bytecode)
     ##2967557441972688032532974552833232470560369835622197258380374934912759346522 86936761 54178317 2523556208598399685092448573215262490339147880504183956623043299586720619041 0xAB43bA48c9edF4C2C4bB01237348D1D7B28ef168
 ##this runs with the other program
 
 ##1133241622275725814223971999546247521430565862767695490606429333213530292302 0 0 2763908502453229549527775066481247394153308217029680038552310002712944303626 0xAB43bA48c9edF4C2C4bB01237348D1D7B28ef168
 ##it does not run with this
 
+        
     transaction = new_contract.constructor(
-        accountTreeRoot=2967557441972688032532974552833232470560369835622197258380374934912759346522,
-        amountTokenA=86936761,
-        amountTokenB=54178317,
-        cairoProgramHash=2523556208598399685092448573215262490339147880504183956623043299586720619041,
-        cairoVerifier=0xAB43bA48c9edF4C2C4bB01237348D1D7B28ef168,
-    )    
-   # transaction = new_contract.constructor(
-    #    accountTreeRoot=account_tree_root,
-   #     amountTokenA=amount_token_a,
-   #     amountTokenB=amount_token_b,
-   #     cairoProgramHash=program_hash,
-   #     cairoVerifier=cairo_verifier,
-   # )
+       #accountTreeRoot=account_tree_root,
+        amountTokenA=amount_token_a,
+        amountTokenB=amount_token_b,
+        cairoProgramHash=program_hash,
+        cairoVerifier=cairo_verifier,
+    )
     print("Deploying the AMM demo smart contract...")
     tx_receipt = send_transaction(w3, transaction, operator)
     assert (
@@ -105,10 +99,10 @@ def deploy_contract(batch_prover: BatchProver, w3: Web3, operator: eth.Account) 
     ), f'Failed to deploy contract. Transaction hash: {tx_receipt["transactionHash"]}.'
 
     contract_address = tx_receipt["contractAddress"]
-    input(
-        f"AMM demo smart contract successfully deployed to address {contract_address}. "
-        "You can track the contract state through this link "
-        f"https://goerli.etherscan.io/address/{contract_address} ."
+    print(
+        f"AMM demo smart contract successfully deployed to address {contract_address}. ",
+        "You can track the contract state through this link ",
+        f"https://goerli.etherscan.io/address/{contract_address} .",
         "Press enter to continue."
     )
 
@@ -132,18 +126,14 @@ def main():
     args = parser.parse_args()
 
     # Connect to an Ethereum node.
-    node_rpc_url = input(
-        "Please provide an RPC URL to communicate with an Ethereum node on Goerli: "
-    )
+    node_rpc_url = "https://goerli.infura.io/v3/b76793dac63d4bda8c2aae5bf8348440"
     w3 = Web3(HTTPProvider(node_rpc_url))
     if not w3.isConnected():
         print("Error: could not connect to the Ethereum node.")
         exit(1)
 
     # Initialize Ethereum account for on-chain transaction sending.
-    operator_private_key_str = input(
-        "Please enter an operator private key, " "or press Enter to generate a new private key: "
-    )
+    operator_private_key_str = "43cb30f6aa228b91cd22a9f54e0fb1fd72d2d7777bc5bcfea1dcadb7481149fd"
     try:
         operator_private_key = int(operator_private_key_str, 16)
     except ValueError:
@@ -205,7 +195,7 @@ def tx_kwargs(w3: Web3, sender_account: eth.Account):
     sender_account: the account sending the transaction.
     """
     nonce = w3.eth.getTransactionCount(sender_account)
-    return {"from": sender_account, "gas": 10 ** 6, "​【15 cm】gasPrice": GAS_PRICE, "nonce": nonce}
+    return {"from": sender_account, "gas": 10 ** 6, "gasPrice": GAS_PRICE, "nonce": nonce}
 
 
 def send_transaction(w3, transaction, sender_account: eth.Account):
@@ -247,7 +237,7 @@ def rand_transaction() -> VoteTransaction:
     Draws a random Vote transaction.
     """
     return VoteTransaction(
-        account_id=random.randint(0, N_ACCOUNTS - 1), token_a_amount=random.randint(1, 1000)
+        account_id=random.randint(0, N_ACCOUNTS - 1), token_a_amount=random.randint(1, 1000), token_b_amount=random.randint(1, 1000)
     )
 
 

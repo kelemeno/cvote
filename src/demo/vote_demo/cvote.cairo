@@ -33,11 +33,11 @@ end
 func vote{range_check_ptr}(state : AmmState, transaction : VoteTransaction*) -> (state : AmmState):
     alloc_locals
 
-    tempvar a = transaction.token_a_amount
-    tempvar b = transaction.token_b_amount
+    tempvar adif = transaction.token_a_amount
+    tempvar bdif = transaction.token_b_amount
     
-    a =a+ AmmState.token_a_balance
-    b =b+ AmmState.token_b_balance
+    tempvar a = adif + state.token_a_balance
+    tempvar b = bdif + state.token_b_balance
 
     # Update the state.
     local new_state : AmmState
@@ -49,8 +49,8 @@ func vote{range_check_ptr}(state : AmmState, transaction : VoteTransaction*) -> 
         # debugging purposes.
         print(
             f'vote: Account {ids.transaction.account_id} '
-            f'gave {ids.a} tokens of type token_a and '
-            f'gave {ids.b} tokens of type token_b.')
+            f'gave {ids.adif} tokens of type token_a and '
+            f'gave {ids.bdif} tokens of type token_b.')
     %}
 
     return (state=new_state)
@@ -64,7 +64,7 @@ func transaction_loop{range_check_ptr}(
 
     let first_transaction : VoteTransaction* = [transactions]
     let (state) = vote(state=state, transaction=first_transaction)
-
+    %{print(ids.state) %}
     return transaction_loop(
         state=state, transactions=transactions + 1, n_transactions=n_transactions - 1)
 end
@@ -109,9 +109,10 @@ func main{output_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}():
         # which will allow the verifier to check that they
         # are indeed valid.
         ids.state.token_a_balance = \
-            0
+            program_input['token_a_balance'] ##maybe 0?
         ids.state.token_b_balance = \
-            0
+            program_input['token_b_balance'] ##maybe 0?
+            
     %}
 
     # Output the AMM's balances before applying the batch.

@@ -11,9 +11,10 @@ contract IFactRegistry {
   AMM demo contract.
   Maintains the AMM system state hash.
 */
-contract votedemo {
+contract CvoteDemo {
+    
 
-
+    
     // On-chain tokens balances.
     uint256 amountTokenA_;
     uint256 amountTokenB_;
@@ -48,8 +49,8 @@ contract votedemo {
         require(cairoVerifier_.isValid(fact), "MISSING_CAIRO_PROOF");
 
         // Ensure the output consistency with current system state.
-        require(programOutput.length == 4, "​【15 cm】INVALID_PROGRAM_OUTPUT");
-        //require(accountTreeRoot_ == programOutput[4], "ACCOUNT_TREE_ROOT_MISMATCH");
+        require(programOutput.length == 4, "INVALID_PROGRAM_OUTPUT");
+       // require(accountTreeRoot_ == programOutput[4], "ACCOUNT_TREE_ROOT_MISMATCH");
         require(amountTokenA_ == programOutput[0], "TOKEN_A_MISMATCH");
         require(amountTokenB_ == programOutput[1], "TOKEN_B_MISMATCH");
 
