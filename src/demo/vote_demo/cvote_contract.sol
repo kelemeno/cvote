@@ -25,6 +25,8 @@ contract CvoteDemo {
     // The Cairo verifier.
     IFactRegistry cairoVerifier_;
 
+    //Declare an Event
+    event Change(uint256 avalue, uint256 bvalue);
     /*
       Initializes the contract state.
     */
@@ -40,7 +42,11 @@ contract CvoteDemo {
         amountTokenB_ = amountTokenB;
         cairoProgramHash_ = cairoProgramHash;
         cairoVerifier_ = IFactRegistry(cairoVerifier);
+        //Emit an event
+        emit Change(amountTokenA_, amountTokenB_);
     }
+    
+   
 
     function updateState(uint256[] memory programOutput) public {
         // Ensure that a corresponding proof was verified.
@@ -58,5 +64,8 @@ contract CvoteDemo {
         
         amountTokenA_ = programOutput[2];
         amountTokenB_ = programOutput[3];
+        
+        //Emit an event
+        emit Change(amountTokenA_, amountTokenB_);
     }
 }

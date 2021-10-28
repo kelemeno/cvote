@@ -61,20 +61,21 @@ def deploy_contract(batch_prover: BatchProver, w3: Web3, operator: eth.Account) 
     operator: the account deploying the contract.
     """
 
-    account_tree_root = get_merkle_root(batch_prover.accounts)
+   # account_tree_root = get_merkle_root(batch_prover.accounts)
     amount_token_a = batch_prover.balance.a
     amount_token_b = batch_prover.balance.b
     program_hash = compute_program_hash_chain(batch_prover.program)
     cairo_verifier = batch_prover.sharp_client.contract_client.contract.address
 
     # Compile the smart contract.
+    #breakpoint()
     print("Compiling the AMM demo smart contract...")
     artifacts = (
         subprocess.check_output(["solc", "--bin", "--abi", CONTRACT_SOURCE_PATH])
         .decode("utf-8")
         .split("\n")
     )
-    bytecode = artifacts[9]
+    bytecode = artifacts[3]
     abi = artifacts[5]
     new_contract = w3.eth.contract(abi=abi, bytecode=bytecode)
    ## print(account_tree_root, amount_token_a,amount_token_b,program_hash,cairo_verifier, abi, bytecode)
@@ -92,6 +93,7 @@ def deploy_contract(batch_prover: BatchProver, w3: Web3, operator: eth.Account) 
         cairoProgramHash=program_hash,
         cairoVerifier=cairo_verifier,
     )
+    
     print("Deploying the AMM demo smart contract...")
     tx_receipt = send_transaction(w3, transaction, operator)
     assert (
